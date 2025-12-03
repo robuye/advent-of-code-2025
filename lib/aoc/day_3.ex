@@ -7,12 +7,8 @@ defmodule AOC.Day3 do
       |> String.split("", trim: true)
       |> Enum.map(&String.to_integer/1)
     end)
-    |> Enum.map(fn bank ->
-      get_digits(bank, 2, [])
-      |> Enum.map(&Integer.to_string/1)
-      |> Enum.join("")
-      |> String.to_integer()
-    end)
+    |> Enum.map(&get_digits(&1, 2, []))
+    |> Enum.map(&to_integer/1)
     |> Enum.sum()
   end
 
@@ -24,30 +20,28 @@ defmodule AOC.Day3 do
       |> String.split("", trim: true)
       |> Enum.map(&String.to_integer/1)
     end)
-    |> Enum.map(fn bank ->
-      get_digits(bank, 12, [])
-      |> Enum.map(&Integer.to_string/1)
-      |> Enum.join("")
-      |> String.to_integer()
-    end)
+    |> Enum.map(&get_digits(&1, 12, []))
+    |> Enum.map(&to_integer/1)
     |> Enum.sum()
   end
 
-  def get_digits(_candidates, 0, accumulator) do
-    accumulator
-  end
+  def get_digits(_candidates, 0, accumulator), do: accumulator
 
   def get_digits(candidates, count, accumulator) do
-    valid_candidates =
-      Enum.slice(candidates, 0, length(candidates) - count + 1)
+    valid_candidates = Enum.slice(candidates, 0, length(candidates) - count + 1)
 
     next_digit = Enum.max(valid_candidates)
     next_idx = Enum.find_index(valid_candidates, &(&1 == next_digit))
 
-    next_candidates =
-      candidates
-      |> Enum.slice(next_idx + 1, length(candidates))
+    candidates
+    |> Enum.slice(next_idx + 1, length(candidates))
+    |> get_digits(count - 1, accumulator ++ [next_digit])
+  end
 
-    get_digits(next_candidates, count - 1, accumulator ++ [next_digit])
+  def to_integer(digits) do
+    digits
+    |> Enum.map(&Integer.to_string/1)
+    |> Enum.join("")
+    |> String.to_integer()
   end
 end
