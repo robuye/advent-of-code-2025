@@ -1,4 +1,5 @@
 defmodule AOC.Day4 do
+  # completes in ~0.02 seconds
   def part_1() do
     grid =
       File.read!("data/day_4_1.txt")
@@ -13,8 +14,13 @@ defmodule AOC.Day4 do
           %{x: x, y: y, chr: v}
         end)
       end)
+      |> Enum.map(fn item ->
+        {{item.y, item.x}, item}
+      end)
+      |> Enum.into(%{})
 
     grid
+    |> Map.values()
     |> Enum.map(fn item ->
       count = check_neightbors(grid, item)
 
@@ -26,6 +32,7 @@ defmodule AOC.Day4 do
     |> Enum.count()
   end
 
+  # completes in ~0.45 seconds
   def part_2() do
     grid =
       File.read!("data/day_4_1.txt")
@@ -85,7 +92,7 @@ defmodule AOC.Day4 do
           |> Map.put(:cursor, new_position)
           |> Map.put(:grid, new_grid)
         else
-          # move forward by 1
+          # move the cursor forward by 1
           new_position = move_cursor_forward(state.cursor, state.max_x, state.max_y)
 
           state
@@ -146,26 +153,6 @@ defmodule AOC.Day4 do
     ])
     |> Map.values()
     |> Enum.sum_by(& &1.chr)
-  end
-
-  defp check_neightbors(grid, item) do
-    max_x = Enum.max_by(grid, & &1.x)
-    max_y = Enum.max_by(grid, & &1.y)
-
-    x1 = if(item.x == 0, do: 0, else: item.x - 1)
-    x2 = if(item.x == max_x, do: item.x, else: item.x + 1)
-
-    y1 = if(item.y == 0, do: 0, else: item.y - 1)
-    y2 = if(item.y == max_y, do: item.y, else: item.y + 1)
-
-    neightbors =
-      grid
-      |> Enum.filter(fn candidate ->
-        candidate.x in x1..x2 and candidate.y in y1..y2
-      end)
-      |> Enum.sum_by(& &1.chr)
-
-    neightbors - 1
   end
 
   defp print_grid(map) do
