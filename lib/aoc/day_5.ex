@@ -71,29 +71,30 @@ defmodule AOC.Day5 do
   end
 
   def bfs(state) do
-    {next, leftover_candidates} = List.pop_at(state.candidates, 0)
+    {next_candidate, leftover_candidates} = List.pop_at(state.candidates, 0)
 
-    overlaping = Enum.find(state.visited, fn x -> not Range.disjoint?(next, x) end)
+    overlaping = Enum.find(state.visited, fn x -> not Range.disjoint?(next_candidate, x) end)
     overlaping_idx = Enum.find_index(state.visited, &(&1 == overlaping))
 
     {next_visited, next_candidates} =
       if overlaping do
-        merged_range = merge_ranges(next, overlaping)
+        merged_range = merge_ranges(next_candidate, overlaping)
 
-        # requeue previous range in case it overlaps after merge
         next_candidates =
-          if overlaping_idx > 0 do
-            previous = Enum.at(state.candidates, overlaping_idx - 1)
+          with true <- overlaping_idx > 0,
+               previous <- Enum.at(state.candidates, overlaping_idx - 1),
+               true <- previous.last >= overlaping.first do
+            # requeue previous range if it overlaps after merge
             [previous | leftover_candidates]
           else
-            leftover_candidates
+            _ -> leftover_candidates
           end
 
         next_visited = List.replace_at(state.visited, overlaping_idx, merged_range)
 
         {next_visited, next_candidates}
       else
-        next_visited = [next | state.visited]
+        next_visited = [next_candidate | state.visited]
 
         {next_visited, leftover_candidates}
       end
