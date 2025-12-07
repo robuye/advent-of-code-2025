@@ -154,26 +154,4 @@ defmodule AOC.Day4 do
     |> Map.values()
     |> Enum.sum_by(& &1.chr)
   end
-
-  defp print_grid(map) do
-    # %{{y, x} => %{chr: 0|1}}
-
-    {{max_x, _}, _} = Enum.max_by(map, fn {{x, _y}, _} -> x end)
-    {{_, max_y}, _} = Enum.max_by(map, fn {{_x, y}, _} -> y end)
-
-    IO.puts("")
-
-    Enum.map(0..max_y, fn y ->
-      Enum.reduce(0..max_x, "", fn x, acc ->
-        chr = if(map[{y, x}].chr == 1, do: "@", else: ".")
-
-        acc <> chr
-      end)
-    end)
-    |> Enum.each(&IO.puts/1)
-
-    IO.puts("")
-
-    :ok
-  end
 end
