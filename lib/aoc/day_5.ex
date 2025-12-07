@@ -79,20 +79,9 @@ defmodule AOC.Day5 do
     {next_visited, next_candidates} =
       if overlaping do
         merged_range = merge_ranges(next_candidate, overlaping)
-
-        next_candidates =
-          with true <- overlaping_idx > 0,
-               previous <- Enum.at(state.candidates, overlaping_idx - 1),
-               true <- previous.last >= overlaping.first do
-            # requeue previous range if it overlaps after merge
-            [previous | leftover_candidates]
-          else
-            _ -> leftover_candidates
-          end
-
         next_visited = List.replace_at(state.visited, overlaping_idx, merged_range)
 
-        {next_visited, next_candidates}
+        {next_visited, leftover_candidates}
       else
         next_visited = [next_candidate | state.visited]
 
